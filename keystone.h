@@ -31,6 +31,7 @@ extern struct miscdevice keystone_dev;
 #define SBI_SM_RUN_ENCLAVE      105
 #define SBI_SM_STOP_ENCLAVE     106
 #define SBI_SM_RESUME_ENCLAVE   107
+#define SBI_SM_MYMMAPADD_ENCLAVE 109
 
 /* error codes: need to add more */
 #define ENCLAVE_INTERRUPTED     2
@@ -131,3 +132,4 @@ unsigned long calculate_required_pages(
 #define keystone_warn(fmt, ...) \
   pr_warn("keystone_enclave: " fmt, ##__VA_ARGS__)
 #endif
+

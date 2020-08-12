@@ -23,6 +23,8 @@
   _IOR(KEYSTONE_IOC_MAGIC, 0x06, struct keystone_ioctl_create_enclave)
 #define KEYSTONE_IOC_UTM_INIT \
   _IOR(KEYSTONE_IOC_MAGIC, 0x07, struct keystone_ioctl_create_enclave)
+#define KEYSTONE_IOC_MYMMAPADD_ENCLAVE \
+  _IOR(KEYSTONE_IOC_MAGIC, 0x08, struct keystone_ioctl_mymmapadd_enclave)
 
 #define RT_NOEXEC 0
 #define USER_NOEXEC 1
@@ -73,4 +75,17 @@ struct keystone_ioctl_run_enclave {
   __u64 ret;
 };
 
+
+//~~~~~ME ADD~~~~~~
+struct keystone_ioctl_mymmapadd_enclave {
+  __u64 eid;
+  __u64 mmapaddr; //add these
+  __u64 mmapsize;
+  __u64 entry;
+  __u64 args_ptr;
+  __u64 args_size;
+  __u64 ret;
+};
+
 #endif
+

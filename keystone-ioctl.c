@@ -7,6 +7,7 @@
 #include "keystone_user.h"
 #include <linux/uaccess.h>
 #include <keystone_user.h>
+//#include <stdlib.h>
 
 int __keystone_destroy_enclave(unsigned int ueid);
 
@@ -92,6 +93,34 @@ error_destroy_enclave:
 
 }
 
+//no need to put eid as input parameter
+
+
+///~~~~~~~ME ADD~~~~~~~~~~
+
+int keystone_mymmapadd_enclave(unsigned long arg){
+    int ret = 0;
+    keystone_err("[MY_DRIVER] Entered keystone_mymmapadd_enclave in driver\n");
+    struct keystone_ioctl_mymmapadd_enclave *mymmapadd = (struct keystone_ioctl_mymmapadd_enclave*) arg;
+    unsigned long ueid = mymmapadd->eid;
+   // keystone_err("[MY_DRIVER] The ueid is 0x%lx\n", ueid);
+    unsigned long addr = mymmapadd -> mmapaddr;
+    unsigned long size = mymmapadd -> mmapsize;
+    keystone_err("[MY_DRIVER] The ueid is 0x%lx, the addr is 0x%lx, the size is 0x%lx\n", ueid, addr, size);
+    struct enclave* enclave;
+    enclave = get_enclave_by_id(ueid);
+    if (!enclave)
+    {
+        keystone_err("invalid enclave id\n");
+        return -EINVAL;
+    }
+    keystone_err("[MY_DRIVER] Calling SBI_CALL from driver...\n");
+    ret = SBI_CALL_3(SBI_SM_MYMMAPADD_ENCLAVE, enclave->eid, addr, size);
+    return ret;
+
+
+}
+
 int keystone_run_enclave(unsigned long arg)
 {
   int ret = 0;
@@ -100,6 +129,7 @@ int keystone_run_enclave(unsigned long arg)
   struct keystone_ioctl_run_enclave *run = (struct keystone_ioctl_run_enclave*) arg;
 
   ueid = run->eid;
+  keystone_err("[MY_DRIVER] The ueid is %lx\n", ueid);
   enclave = get_enclave_by_id(ueid);
 
   if(!enclave) {
@@ -230,6 +260,12 @@ long keystone_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
     case KEYSTONE_IOC_RESUME_ENCLAVE:
       ret = keystone_resume_enclave((unsigned long) data);
       break;
+    
+    case KEYSTONE_IOC_MYMMAPADD_ENCLAVE:
+      //keystone_err("[MY_DRIVER] ntered ioctl\n");
+      //keystone_err("[MY_DRIVER] entered ioctl2\n");
+      ret = keystone_mymmapadd_enclave((unsigned long) data);
+      break;
     /* Note that following commands could have been implemented as a part of ADD_PAGE ioctl.
      * However, there was a weird bug in compiler that generates a wrong control flow
      * that ends up with an illegal instruction if we combine switch-case and if statements.
@@ -269,3 +305,5 @@ int keystone_release(struct inode *inode, struct file *file) {
   }
   return 0;
 }
+
+
