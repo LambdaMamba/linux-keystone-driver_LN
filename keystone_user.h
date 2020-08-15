@@ -85,7 +85,10 @@ struct keystone_ioctl_mymmapadd_enclave {
   __u64 args_ptr;
   __u64 args_size;
   __u64 ret;
+  __u64 min_pages;
+  __u64 add_vaddr;
 };
+
 
 #endif
 
